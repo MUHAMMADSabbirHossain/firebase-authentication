@@ -125,7 +125,7 @@ function App() {
         {/* bootstrap css */}
         <section className='my-5'>
           {
-            accountStatus ? <h2>Please Log In!!!</h2> : <h2>Please Register!!!</h2>
+            accountStatus ? <h2 className='fw-bold'>Please Log In!!!</h2> : <h2 className='fw-bold'>Please Register!!!</h2>
           }
           <Form onSubmit={handleFormSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -148,17 +148,17 @@ function App() {
 
             <>
               {
-                error && <p className='text-danger'>{error}</p>
+                error && <p className='text-danger  fw-bold'>{error}</p>
               }
               {
-                success && <p className='text-success'>{success}</p>
+                success && <p className='text-success fw-bold'>{success}</p>
               }
             </>
 
             {
-              accountStatus ? <Button variant="primary" type="submit">
+              accountStatus ? <Button className='fs-5 fw-bold' variant="primary" type="submit">
                 Log In
-              </Button> : <Button variant="primary" type="submit">
+              </Button> : <Button className='fs-5 fw-bold' variant="primary" type="submit">
                 Register
               </Button>
             }
