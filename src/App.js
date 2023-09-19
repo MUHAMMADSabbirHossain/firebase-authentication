@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { useState } from 'react';
 import { eventWrapper } from '@testing-library/user-event/dist/utils';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import app from './firebase.init';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Form } from 'react-bootstrap';
@@ -50,6 +50,11 @@ function App() {
 
     if (accountStatus) {
 
+      if (!/(?=.*?[#?!@$%^&*-])/.test(password)) {
+        setError("password Should contian at least one special character.");
+        return;
+      };
+
       signInWithEmailAndPassword(auth, email, password)
         .then(result => {
           console.log(result.user);
@@ -69,8 +74,9 @@ function App() {
       createUserWithEmailAndPassword(auth, email, password)
         .then(result => {
           console.log(result.user);
-          setSuccess("Your account is registered successfully.");
+          setSuccess("Your account is registered successfully. Check your Email inbox for verification.");
           setError("");
+          verifyEmail();
         })
         .catch(error => {
           console.error(error.code);
@@ -81,6 +87,13 @@ function App() {
     };
   };
 
+  // verify before create account
+  const verifyEmail = () => {
+    sendEmailVerification(auth.currentUser)
+      .then(() => {
+        console.log("Email verification sended.")
+      })
+  };
 
 
 
