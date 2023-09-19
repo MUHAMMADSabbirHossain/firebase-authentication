@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { eventWrapper } from '@testing-library/user-event/dist/utils';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import app from './firebase.init';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Button, Form } from 'react-bootstrap';
 
 const auth = getAuth(app);
 
@@ -13,6 +15,8 @@ function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [message, setMessage] = useState("");
 
   // button usestate hooks
   // const [register, setRegister] = useState();
@@ -49,10 +53,14 @@ function App() {
     signInWithEmailAndPassword(auth, email, password)
       .then(result => {
         console.log(result.user);
+        setError(false);
+
       })
       .catch(error => {
         console.error(error.code);
-      })
+        setError(true);
+        setMessage(error.code);
+      });
   };
 
 
@@ -93,9 +101,43 @@ function App() {
         </section> */}
 
 
+
+
+
         {/* bootstrap css */}
+        <section className='my-5'>
+          <Form onSubmit={handleFormSubmit}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control onBlur={handleEmailInput} type="email" placeholder="Enter email" />
+              <Form.Text className="text-white">
+                We'll never share your email with anyone else.
+              </Form.Text>
+            </Form.Group>
 
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control onBlur={handlePasswordInput} type="password" placeholder="Password" />
+            </Form.Group>
 
+            <Form.Group className="mb-3" controlId="formBasicCheckbox">
+              <Form.Check type="checkbox" label="I don't have any Accoutn yet." />
+            </Form.Group>
+
+            <>
+              {
+                error && <p className='text-danger'>{message}</p>
+              }
+              {
+                !error && <p className='text-success'>You have successfully login</p>
+              }
+            </>
+
+            <Button variant="primary" type="submit">
+              Log In
+            </Button>
+          </Form>
+        </section>
       </header>
     </div>
   );
