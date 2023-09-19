@@ -2,12 +2,21 @@ import logo from './logo.svg';
 import './App.css';
 import { useState } from 'react';
 import { eventWrapper } from '@testing-library/user-event/dist/utils';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import app from './firebase.init';
+
+const auth = getAuth(app);
 
 function App() {
 
+  // input usestate hooks
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // button usestate hooks
+  // const [register, setRegister] = useState();
+
 
   // handle input
   const handleNameInput = event => {
@@ -23,8 +32,31 @@ function App() {
   const handlePasswordInput = event => {
     console.log(event.target.value);
     setPassword(event.target.value);
+  };
 
-  }
+  const handleFormSubmit = event => {
+    event.preventDefault();
+    // createUserWithEmailAndPassword(auth, email, password)
+    //   .then(result => {
+    //     console.log(result.user);
+    //   })
+    //   .catch(error => {
+    //     console.error(error.code)
+    //       ;
+    //   })
+
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(result => {
+        console.log(result.user);
+      })
+      .catch(error => {
+        console.error(error.code);
+      })
+  };
+
+
+
 
   return (
     <div className="App">
@@ -42,8 +74,9 @@ function App() {
           Learn React
         </a>
 
-        <section>
-          <form action="">
+        {/* vanila css */}
+        {/* <section>
+          <form onSubmit={handleFormSubmit} action="" >
             <h2>Register Project!!!</h2>
 
             <div className='input-container'>
@@ -57,7 +90,12 @@ function App() {
               <button type="submit">Log In</button>
             </div>
           </form>
-        </section>
+        </section> */}
+
+
+        {/* bootstrap css */}
+
+
       </header>
     </div>
   );
