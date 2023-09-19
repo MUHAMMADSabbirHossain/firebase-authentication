@@ -15,8 +15,9 @@ function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [accountStatus, setAccountStatus] = useState(true);
 
   // button usestate hooks
   // const [register, setRegister] = useState();
@@ -38,29 +39,46 @@ function App() {
     setPassword(event.target.value);
   };
 
+  const handleAccountStatusCheckBox = (event) => {
+    console.log("check box clicked.");
+    setAccountStatus(!event.target.checked);
+  };
+
   const handleFormSubmit = event => {
     event.preventDefault();
-    // createUserWithEmailAndPassword(auth, email, password)
-    //   .then(result => {
-    //     console.log(result.user);
-    //   })
-    //   .catch(error => {
-    //     console.error(error.code)
-    //       ;
-    //   })
 
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then(result => {
-        console.log(result.user);
-        setError(false);
+    if (accountStatus) {
 
-      })
-      .catch(error => {
-        console.error(error.code);
-        setError(true);
-        setMessage(error.code);
-      });
+      signInWithEmailAndPassword(auth, email, password)
+        .then(result => {
+          console.log(result.user);
+          setError("");
+          setSuccess("Your account is loged in successfully.");
+
+        })
+        .catch(error => {
+          console.error(error.code);
+          setError(error.code);
+          setSuccess("");
+        });
+
+    }
+    else {
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(result => {
+          console.log(result.user);
+          setSuccess("Your account is registered successfully.");
+          setError("");
+        })
+        .catch(error => {
+          console.error(error.code);
+          setError(error.code);
+          setSuccess(false);
+        });
+
+    };
   };
 
 
@@ -106,6 +124,9 @@ function App() {
 
         {/* bootstrap css */}
         <section className='my-5'>
+          {
+            accountStatus ? <h2>Please Log In!!!</h2> : <h2>Please Register!!!</h2>
+          }
           <Form onSubmit={handleFormSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
@@ -121,21 +142,26 @@ function App() {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
-              <Form.Check type="checkbox" label="I don't have any Accoutn yet." />
+              <Form.Check
+                onChange={handleAccountStatusCheckBox} type="checkbox" label="I don't have any Accoutn yet." />
             </Form.Group>
 
             <>
               {
-                error && <p className='text-danger'>{message}</p>
+                error && <p className='text-danger'>{error}</p>
               }
               {
-                !error && <p className='text-success'>You have successfully login</p>
+                success && <p className='text-success'>{success}</p>
               }
             </>
 
-            <Button variant="primary" type="submit">
-              Log In
-            </Button>
+            {
+              accountStatus ? <Button variant="primary" type="submit">
+                Log In
+              </Button> : <Button variant="primary" type="submit">
+                Register
+              </Button>
+            }
           </Form>
         </section>
       </header>
