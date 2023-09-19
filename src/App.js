@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { useState } from 'react';
 import { eventWrapper } from '@testing-library/user-event/dist/utils';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, updateProfile, sendPasswordResetEmail } from "firebase/auth";
 import app from './firebase.init';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Form } from 'react-bootstrap';
@@ -77,6 +77,7 @@ function App() {
           setSuccess("Your account is registered successfully. Check your Email inbox for verification.");
           setError("");
           verifyEmail();
+          setUserName();
         })
         .catch(error => {
           console.error(error.code);
@@ -95,6 +96,30 @@ function App() {
       })
   };
 
+  const setUserName = () => {
+    updateProfile(auth.currentUser, {
+      displayName: name
+    })
+      .then(() => {
+        console.log("User name is updated successfully.")
+      })
+      .catch(error => {
+        setError(error.code);
+      });
+  };
+
+  const handlePasswordReset = () => {
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        console.log("password is reseted.");
+        setSuccess("Your request is accepted. Please check your email inbox.");
+        setError = "";
+      })
+      .catch(error => {
+        setError(error.code);
+        setSuccess("")
+      })
+  };
 
 
   return (
@@ -137,13 +162,19 @@ function App() {
 
         {/* bootstrap css */}
         <section className='my-5'>
-          {
-            accountStatus ? <h2 className='fw-bold'>Please Log In!!!</h2> : <h2 className='fw-bold'>Please Register!!!</h2>
-          }
           <Form onSubmit={handleFormSubmit}>
+            {
+              accountStatus ? <h2 className='fw-bold'>Please Log In!!!</h2> : <>
+                <h2 className='fw-bold'>Please Register!!!</h2>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                  <Form.Label>User name</Form.Label>
+                  <Form.Control onBlur={handleNameInput} type="text" placeholder="Enter your name" required />
+                </Form.Group>
+              </>
+            }
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
-              <Form.Control onBlur={handleEmailInput} type="email" placeholder="Enter email" />
+              <Form.Control onBlur={handleEmailInput} type="email" placeholder="Enter email" required />
               <Form.Text className="text-white">
                 We'll never share your email with anyone else.
               </Form.Text>
@@ -151,7 +182,7 @@ function App() {
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control onBlur={handlePasswordInput} type="password" placeholder="Password" />
+              <Form.Control onBlur={handlePasswordInput} type="password" placeholder="Password" required />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
@@ -175,6 +206,9 @@ function App() {
                 Register
               </Button>
             }
+            <>
+              <Button onClick={handlePasswordReset} className='fs-5 fw-bold ms-5' variant="primary" type="submit">Forget password?</Button>
+            </>
           </Form>
         </section>
       </header>
